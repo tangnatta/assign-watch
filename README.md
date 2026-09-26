@@ -86,6 +86,7 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 > [!NOTE]
 >
 > Safari does not support the WebExtension `notifications` API used by Assign Watch. The background script detects this and continues without registering notification listeners or creating due-soon alerts; assignment fetching and the rest of the extension remain available. Chrome and Firefox continue to use browser notifications.
+> Pull requests and pushes to `main` or `codex/**` build and upload a native macOS app artifact through GitHub Actions. Tagged releases include the native Safari app ZIP alongside the browser extension packages.
 
 ## Development
 
