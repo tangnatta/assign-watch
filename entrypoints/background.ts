@@ -31,6 +31,10 @@ interface NotifiedState {
 }
 
 function notifyDueSoon(assignment: Activity, timeframe: "24h" | "1h") {
+  if (typeof browser.notifications?.create !== "function") {
+    return;
+  }
+
   const idSuffix = timeframe === "1h" ? "-1h" : "";
   browser.notifications.create(
     `assignwatch-${assignment.type}-${assignment.class_id}-${assignment.id}${idSuffix}`,
@@ -165,13 +169,14 @@ export default defineBackground(() => {
     }
   });
 
-  browser.notifications.onButtonClicked.addListener((notificationId) => {
-    openNotificationAssignment(notificationId);
-  });
-
-  browser.notifications.onClicked.addListener((notificationId) => {
-    openNotificationAssignment(notificationId);
-  });
+  if (browser.notifications) {
+    browser.notifications.onButtonClicked?.addListener((notificationId) => {
+      openNotificationAssignment(notificationId);
+    });
+    browser.notifications.onClicked?.addListener((notificationId) => {
+      openNotificationAssignment(notificationId);
+    });
+  }
 
   browser.runtime.onMessage.addListener(async (message) => {
     if (message?.action === "openOptionsPage") {

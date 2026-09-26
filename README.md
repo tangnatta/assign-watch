@@ -66,16 +66,26 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 
 #### For Safari
 
-1. Run `pnpm build:safari` (or extract `.output/assign-watch-*-safari.zip` or `.output/safari-mv2`).
-2. Package the extension into a native Safari extension app using Xcode's converter CLI tool:
+1. Install Xcode and its command-line tools.
+2. Run `pnpm build:safari` (or extract `.output/assign-watch-*-safari.zip` or `.output/safari-mv2`).
+3. Package the extension into a native Safari extension app using Apple's packager CLI tool:
    ```bash
-   xcrun safari-web-extension-converter .output/safari-mv2
+   xcrun safari-web-extension-packager .output/safari-mv2 \
+     --app-name "Assign Watch" \
+     --bundle-identifier "org.leb2.Assign-Watch" \
+     --macos-only --no-open --no-prompt --force \
+     --project-location .output/safari-xcode
    ```
-3. Follow the instructions in Xcode to run the app and enable the extension under **Safari > Settings > Extensions**.
+4. Build the native macOS wrapper with `pnpm build:safari:app`. This packages the extension into `.output/safari-xcode` and builds the Xcode project into `.output/safari-derived`. If you prefer, open `.output/safari-xcode/Assign Watch/Assign Watch.xcodeproj`, select a development team, and run the **Assign Watch** macOS app target.
+5. Grant the extension access to `app.leb2.org` when Safari asks for website access.
 
 > [!NOTE]
 >
-> Safari extensions require a native macOS/iOS app wrapper created via Xcode CLI (`safari-web-extension-converter`). See the [WXT Safari Guide](https://wxt.dev/guide/essentials/publishing.html#safari) for details.
+> Safari extensions require a native macOS/iOS app wrapper created via Xcode CLI (`safari-web-extension-packager`). See the [WXT Safari Guide](https://wxt.dev/guide/essentials/publishing.html#safari) and [Apple's packaging guide](https://developer.apple.com/documentation/safariservices/packaging-a-web-extension-for-safari) for details.
+
+> [!NOTE]
+>
+> Safari does not support the WebExtension `notifications` API used by Assign Watch. The background script detects this and continues without registering notification listeners or creating due-soon alerts; assignment fetching and the rest of the extension remain available. Chrome and Firefox continue to use browser notifications.
 
 ## Development
 
@@ -110,6 +120,9 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 
    # For Safari
    pnpm dev:safari
+
+   # Package and build Safari's native macOS wrapper
+   pnpm build:safari:app
    ```
 
 4. Build for production

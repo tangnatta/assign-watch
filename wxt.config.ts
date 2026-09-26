@@ -14,6 +14,7 @@ export default defineConfig({
   },
   manifest: {
     default_locale: "en",
+    host_permissions: ["https://app.leb2.org/*"],
     name: "Assign Watch - Extension for LEB2",
     permissions: ["storage", "notifications", "alarms"],
   },
