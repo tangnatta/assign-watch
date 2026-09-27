@@ -1,0 +1,62 @@
+name: Safari CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - "codex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: safari-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm compile
+
+      - name: Lint and format check
+        run: pnpm check
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build unsigned native Safari app for validation
+        run: pnpm build:safari:app CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+
+      - name: Archive native Safari app
+        run: ditto -c -k --sequesterRsrc --keepParent ".output/safari-derived/Build/Products/Release/Assign Watch.app" .output/assign-watch-safari-macos-unsigned.zip
+
+      - name: Upload native Safari app artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: assign-watch-safari-unsigned-${{ github.sha }}
+          path: .output/assign-watch-safari-macos-unsigned.zip
+          if-no-files-found: error
+          retention-days: 30
