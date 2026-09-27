@@ -7,6 +7,11 @@ import { yamlPlugin } from "./yaml-plugin";
 export default defineConfig({
   hooks: {
     "build:manifestGenerated": (wxt, manifest) => {
+      if (wxt.config.browser === "safari") {
+        manifest.permissions = manifest.permissions?.filter(
+          (permission) => permission !== "notifications"
+        );
+      }
       if (wxt.config.mode === "development") {
         manifest.name += " (DEV)";
       }

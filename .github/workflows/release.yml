@@ -31,42 +31,7 @@ on:
         type: boolean
 
 jobs:
-  safari:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build native Safari app
-        run: pnpm build:safari:app
-
-      - name: Archive native Safari app
-        run: ditto -c -k --sequesterRsrc --keepParent ".output/safari-derived/Build/Products/Debug/Assign Watch.app" .output/assign-watch-safari-macos.zip
-
-      - name: Upload native Safari app
-        uses: actions/upload-artifact@v7
-        with:
-          name: assign-watch-safari-app
-          path: .output/assign-watch-safari-macos.zip
-          if-no-files-found: error
-          retention-days: 30
-
   release:
-    needs: safari
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -121,14 +86,8 @@ jobs:
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
 
-      - name: Download native Safari app
-        uses: actions/download-artifact@v7
-        with:
-          name: assign-watch-safari-app
-          path: .output
-
       - name: Upload to GitHub Release
         if: github.event_name == 'push' || inputs.github_release
-        run: npx changelogithub --assets ".output/*-chrome.zip,.output/*-firefox.zip,.output/*-safari.zip,.output/assign-watch-safari-macos.zip" ${{ inputs.dry_run && '--dry' || '' }}
+        run: npx changelogithub --assets ".output/*-chrome.zip,.output/*-firefox.zip,.output/*-safari.zip" ${{ inputs.dry_run && '--dry' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

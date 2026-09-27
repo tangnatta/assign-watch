@@ -77,7 +77,8 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
      --project-location .output/safari-xcode
    ```
 4. Build the native macOS wrapper with `pnpm build:safari:app`. This packages the extension into `.output/safari-xcode` and builds the Xcode project into `.output/safari-derived`. If you prefer, open `.output/safari-xcode/Assign Watch/Assign Watch.xcodeproj`, select a development team, and run the **Assign Watch** macOS app target.
-5. Grant the extension access to `app.leb2.org` when Safari asks for website access.
+5. Enable **Assign Watch** under **Safari > Settings > Extensions**.
+6. Grant the extension access to `app.leb2.org` when Safari asks for website access.
 
 > [!NOTE]
 >
@@ -85,7 +86,11 @@ Download the latest release from the [GitHub Releases](https://github.com/thrxpt
 
 > [!NOTE]
 >
-> Safari does not support the WebExtension `notifications` API used by Assign Watch. The background script detects this and continues without registering notification listeners or creating due-soon alerts; assignment fetching and the rest of the extension remain available. Chrome and Firefox continue to use browser notifications. Pull requests and pushes to `main` or `codex/**` build and upload a native macOS app artifact through GitHub Actions. Tagged releases include the native Safari app ZIP alongside the browser extension packages.
+> Safari does not support the WebExtension `notifications` API used by Assign Watch. Safari builds omit that permission, and the background script continues without notification listeners or due-soon alerts. Chrome and Firefox retain browser notifications.
+
+> [!IMPORTANT]
+>
+> GitHub Actions builds an **unsigned Release app** for build validation only. These artifacts are not signed or notarized for end-user installation. Tagged releases include the Safari web-extension ZIP, which requires packaging with Xcode; they do not include a distributable native Safari app. App Store distribution requires Apple Developer signing and submission through App Store Connect. For a local signed build, open the generated Xcode project, choose your development team for both app and extension targets, and build from Xcode. Re-running the packaging command regenerates the project and replaces its signing settings.
 
 ## Development
 

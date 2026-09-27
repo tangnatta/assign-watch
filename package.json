@@ -21,7 +21,7 @@
     "check": "ultracite check",
     "fix": "ultracite fix",
     "bump": "bumpp",
-    "build:safari:app": "pnpm package:safari && xcodebuild -project '.output/safari-xcode/Assign Watch/Assign Watch.xcodeproj' -scheme 'Assign Watch' -configuration Debug -destination 'generic/platform=macOS' -derivedDataPath .output/safari-derived build",
+    "build:safari:app": "pnpm package:safari && xcodebuild -project '.output/safari-xcode/Assign Watch/Assign Watch.xcodeproj' -scheme 'Assign Watch' -configuration Release -destination 'generic/platform=macOS' -derivedDataPath .output/safari-derived build",
     "package:safari": "pnpm build:safari && xcrun safari-web-extension-packager .output/safari-mv2 --app-name \"Assign Watch\" --bundle-identifier org.leb2.Assign-Watch --macos-only --no-open --no-prompt --force --project-location .output/safari-xcode"
   },
   "dependencies": {
